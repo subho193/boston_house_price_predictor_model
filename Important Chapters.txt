@@ -1,0 +1,1805 @@
+QUIZ OF EACH CHAPTER MUST BE COMPLETED.
+
+Chapter: C
+Video: V
+
+C:3, V:3 (Download Files)
+Commands:(Clauses)
+
+USE database_name,
+SHOW TABLES;
+DESC TABLE_NAME,
+
+SELECT,
+WHERE,
+COUNT,
+DISTINCT,
+LIKE,
+'%'-Wild Card Search
+
+Missing Value Handling: IMPORTANT
+
+For Text DATa search with: "" 
+For Numerical data Search with: null;
+
+Write SQL queries for the following:
+
+1. Print all movie titles and release year for all Marvel Studios movies.
+2. Print all movies that have Avenger in their name.
+3. Print the year when the movie "The Godfather" was released.
+4. Print all distinct movie studios in the Bollywood industry.
+
+V:5
+
+IN, 
+BETWEEN, 
+ORDER BY DESC or ASC, 
+LIMIT, 
+OFFSET, 
+>=,
+<=,
+>,
+<,
+<>,
+AND,
+OR,
+IS,
+IS NOT,
+EXPORT DATA,
+
+NOTE: OFFSET can't be used without LIMIT
+
+Write SQL queries for the following:
+
+1. Print all movies in the order of their release year (latest first)
+2. All movies released in the year 2022
+3. Now all the movies released after 2020
+4. All movies after the year 2020 that have more than 8 rating
+5. Select all movies that are by Marvel Studios and Hombale Films
+6. Select all THOR movies by their release year
+7. Select all movies that are not from Marvel Studios
+
+V:7
+
+MIN,
+MAX,
+AVG,
+ROUND,
+GROUP BY,
+AS- Alias Name,
+SUM,	
+VAR_POP,
+STDDEV
+
+Exercise - Summary analytics (MIN, MAX, AVG, GROUP BY)
+
+1. How many movies were released between 2015 and 2022
+2. Print the max and min movie release year
+3. Print a year and how many movies were released in that year starting with the latest year
+
+
+V:9
+
+HAVING: We can use HAVING with all derived columns without even using GROUP BY
+
+********
+SELECT> FROM> WHERE> GROUP BY> HAVING> ORDER BY> LIMIT> OFFSET
+*******
+
+V:10---IMPORTANT
+
+Concept of CALCULATED COLUMNS;
+
+IF,
+NESTED IF,
+CASE,
+WHEN,
+THEN,
+ELSE,
+END,
+YEAR,
+CURYEAR
+
+MUST LEARN: PROMPT ENGINEERING
+
+*** It is better to use a CASE statement instead of writing a long NESTED IF Else statement.
+
+Write SQL queries for the following,
+
+1. Print profit % for all the movies
+
+
+Chapter:4 
+
+Video: 1 -MUST WATCH
+
+Benefits of Using Multiple Tables,
+Problems of Using a Single Large Table:
+
+a. Repetitive Data or Data Redundancy
+b. Unorganized data
+c. Data Updation is difficult
+
+Concept of:
+
+1. Fact & Dimension Table
+2. Normalization & Denormalization
+3. Primary & Foreign Key
+4. Star & SnowFlake Schema
+5. Different Types of Joins(Inner, Outer, Left Outer, Right Outer, Cross, Full jOIN OR UNION)
+
+USING
+JOIN TABLES BASED ON MULTIPLE COLUMNS (ON with AND)
+
+
+INNER JOIN ----- INTERSECTION-- ONLY SHOWS THE COMMON RECORDS
+LEFT JOIN ------ ALL THE RECORDS OF THE LEFT TABLE--- NULL FOR UNMATCHED RECORDS IN THE RIGHT TABLE
+RIGHT JOIN--- ALL THE RECORDS OF THE RIGHT TABLE--- NULL FOR UNMATCHED RECORDS IN THE LEFT TABLE
+
+
+
+*******after the table name we use is the LEFT TABLE.
+
+Write SQL queries for the following,
+
+1. Show all the movies with their language names
+2. Show all Telugu movie names (assuming you don't know the language
+id for Telugu)
+3. Show the language and number of movies released in that language
+
+CONCAT function is Important
+
+select
+    name,
+    variant_name,
+    price,
+    variant_price,
+    concat(variant_name," ", name) as full_name,
+    price+variant_price as full_price
+from items
+cross join variants;
+
+** Multiple Join with different tables.
+
+*** Use of: GROUP_CONCAT() ******: Row wise aggregation
+
+select
+	title,
+    group_concat(name separator ', ') as actors
+from cte
+group by title;
+
+
+ERD: Entity Relationship Diagram: This helps us to understand the relationship between multiple tables.
+
+
+Write SQL queries for the following,
+
+1. Generate a report of all Hindi movies sorted by their revenue amount in millions.
+Print movie name, revenue, currency, and unit
+
+
+Chapter:5
+Video:1
+
+Subqueries: Can return 1 value or list of values or values in the tabular format
+: as per the requirement.
+
+
+select * from movies
+where imdb_rating in
+	(
+	(select max(imdb_rating) from movies),
+    	(select min(imdb_rating) from movies)
+    	);
+
+*Select all the movies whose rating is greater than ANY of the marvel movies rating
+
+select * from movies 
+where imdb_rating>All(
+select imdb_rating from movies
+where studio like "%Marvel%");
+
+select * from movies------ text for ANY
+where imdb_rating= ANY
+(select imdb_rating from movies 
+where imdb_rating between 4.0 and 8.0);
+
+ANY
+ALL: FUNCTIONS ARE IMPORTANT
+
+
+Exercise: Show all the actor_ids, Actor_names and the total number of movies they have acted in.
+
+
+Using CTE:
+
+with cte as(
+select
+	actor_id,
+    name,
+    group_concat(movie_id separator " | ") as movie_ids,
+    count(*) as movie_count
+from actors as a
+join movie_actor as ma
+using(actor_id)
+group by actor_id,name
+order by movie_count desc)
+select actor_id,name,movie_count from cte;
+
+
+Using Subquery: Co-Related Subquery: When a subquery is dependent for its values on the outer query then it is called a correlated subquery.
+
+select actor_id,name,movie_count from (
+select
+	actor_id,
+    name,
+    group_concat(movie_id separator " | ") as movie_ids,
+    count(*) as movie_count
+from actors as a
+join movie_actor as ma
+using(actor_id)
+group by actor_id,name
+order by movie_count desc) as a;
+
+*Explain Analyze
+
+To check the performance of the query
+
+
+
+Write SQL queries for the following,
+
+1. Select all the movies with minimum and maximum release_year. Note that there
+can be more than one movie in min and a max year hence output rows can be more than 2
+
+select title, release_year from movies
+where release_year IN
+((Select min(release_year) from movies),(select max(release_year) from movies))
+order by release_year;
+    
+2. Select all the rows from the movies table whose imdb_rating is higher than the average rating
+
+select * from movies
+where imdb_rating> (select avg(imdb_rating) from movies);
+
+
+Exercise: Movies list that made 500% profit but rating is less than average rating.
+
+select
+	m.title,
+    m.imdb_rating,
+    f.budget,
+    f.revenue,
+    f.unit,
+    f.currency,
+    round(((f.revenue-f.budget)*100/f.budget),2) as profit_percentage
+from movies as m
+join financials as f
+using(movie_id)
+where imdb_rating<(select avg(imdb_rating) from movies)
+having profit_percentage>500;
+
+
+***Benefits of Subquery:
+
+1. Makes query very readable
+2. Same resultset can be used multiple times
+3. We can convert queries with CTE into VIEWs if it is used multiple times.
+
+
+Write SQL queries for the following,
+
+Select all Hollywood movies released after the year 2000 that made more than 500 million $ profit or more profit. Note that all Hollywood movies have millions as a unit hence you don't need to do the unit conversion. Also, you can write this query without CTE as well but you should try to write this using CTE only
+
+***CTE: The Range of CTE is within the range of the particular query. When a particular query is ended the CTE is of no use. This means after that query we can't use that CTE.
+
+
+Exercise:
+
+1. Standard deviation is a technique used in the data industry for an outlier removal. A business manager decided that any imdb_rating (in our movies table) that is plus or minus one standard deviation away from an average (which is 7.95) is considered an outlier. Write a query that prints these outliers,
+
+2. Write a query to select most youngest and oldest 3 actors from our movies database.
+
+(Select * from actors
+order by birth_year asc
+limit 3)
+union
+(select * from actors
+order by birth_year desc
+limit 3)
+order by birth_year
+
+3. For the salaries table below, write an SQL query that can print all the employees whose salary is greater than the average salary in the department
+
+(select * from ds
+where department="IT" and Salary>(
+select round(avg(Salary),2) as average_salary from ds
+where department="IT"))
+
+Union
+
+(select * from ds
+where department="HR" and Salary>(
+select round(avg(Salary),2) as average_salary from ds
+where department="HR"))
+
+Union
+
+(select * from ds
+where department="FN" and Salary>(
+select round(avg(Salary),2) as average_salary from ds
+where department="FN"))
+
+
+-- Better Code:
+
+With Cte as(
+select Department, avg(salary) as average_sal from ds
+group by Department)
+select * from ds as s
+join cte
+using(department)
+where Salary>average_sal;
+
+Chapter:6
+
+Database Design steps:
+
+1. Draw Conceptual Model
+2. Entity Relationship Diagram
+3. Database Schema
+
+
+Data Integrity: Data Integrity means to make the data ACCURATE and CONSISTENT throughout its life cycle.
+
+Let, us have a table where there are records of customer transactions. A customer may have purchased from the store 5 times. Every time when the data gets recorded email id gets stored. Now for some reason, the customer has updated the email address. We need to update all the rows where that customer's data is entered. It may happen that for some bug or manual error all the records do not get updated then the data we will get will be called inconsistent data.
+
+Our goal is to follow such a process so that the data we use should be accurate and consistent throughout its life cycle(as long as the data is in use).
+
+Our target is to design our database in such a way that 
+
+1. there is less duplication
+2. Better data integrity
+3. Flexible Design
+
+To achieve this we should create different tables for different entities present in the data.
+
+Like, the product's details(name, size, product_id, price, etc) should be in a table and the customer's details(name, address, contact number, email, customer id) should be in a different table.
+And there should be a BRIDGE TABLE/Link Table like a sales table where we will get all the transaction history which may contain(customer_id, product_id,
+purchase date, purchase quantity)
+
+If we put all the details in a single table then in that table there will be redundant/duplicate data, Design is not flexible,
+data updation will become difficult eventually poor data integrity will be there.
+
+The process of creating multiple tables is called Normalization.
+
+***Normalization: This is a process of organizing the database so that we can avoid data duplication and increase data integrity.
+
+Type: 1NF,2NF, 3NF
+
+
+****Denormalization: When we combine multiple tables together and create a single large table that process is called Data DeNormalization.
+
+But Denormalized tables may contain redundant/duplicate data, data updation becomes difficult, and poor data integrity can be witnessed.
+
+***FACT Tables are generally Highly Denormalized
+***DIMENSION Tables are generally Highly Normalized
+
+
+DATA TYPES
+
+a. NUMERIC DATA TYPE
+
+1. INT, DECIMAL, FLOAT, DOUBLE
+
+when precision does not matter we can use FLOAT
+WHEN precision matters then we use DOUBLE
+when we want to limit the decimal places then we use DECIMAL(N,M)
+
+WHERE N: total number of digits
+and M: number of digits after the decimal point
+
+Excluding the DECIMAL POINT
+
+b. String DATA TYPE
+
+a. Fixed Length: Char(n): Number of charaters are fixed will not take more than 'n' characters. if there is 'n-1' or less than that number of characters then memory will get auto filled for the blank positions. 
+
+Ex. 
+char(5) 
+word:'boy'
+memory:'boy  '
+
+
+b. Variable Length
+
+*Varchar(n)
+
+No limit, only occupy what is required.
+
+*ENUM: when we are sure about the categories those are going to get placed. No other category by mistake can't be entered.
+
+BLOB: BLOB data type helps to store images as binary digits.
+
+
+c. Date Time Data Type
+
+Timestamp (year month date hr minute sec) (LAST UPDATE CASES WE WILL USE)
+date(year month date)
+year(yyyy)
+TIME,
+DATETIME
+
+depending upon the requirement we will use appropriate data type.
+
+
+d. JSON & GEOmetry: May check later
+
+
+PRACTICE WITH JSON OBJECT
+
+c:6,V:9 & 10
+
+PRIMARY KEY: a column consists of unique values, some times may be a combination of more than one column, individually denoting each record in a table. helps to join multiple tables with the help of Foreign Key.
+
+FOREIGN KEY: reference of a primary key column of a table stored in a different table. Helps to connect both the table.
+
+Generally, dimension table contains a Primary Key column and the Fact table contains Foreign Key column.
+
+Natural Primary Key: Any column in the data table which contains unique records is called Natural Primary Key as they are natuarlly part of the dataset. Like Aadhar Card number, Social Security Number, Pan Card Number etc.
+
+Surrogate Primary Key: The primary key which we need to create in order to distinguish each record in the data set independently are called Surrogate Priamry Key. Like, Customer_id, Product_id, Language_id, etc.
+
+Composite Primary Key: When we merge multiple columns present in the dataset to form a primary key column then we call that column a composite primary key. Composite Primary Keys are Natural Primary Keys as they are part of the dataset and do not need to be created artificially.
+
+
+Constraints: Primary Key, Foreign Key, Auto Incremental, Non Null, Unique, Binary, G(Generated for Custom columns) etc.
+
+****A Foreign Key column can't contain any value that is not present in the related Primary Key column. If we try to enter any values in the foreign key column which is not a part of the Primary Key column then we will get an error and that operation will be unsuccessful.
+
+
+Parent Table: The table contains the primary key column is called Parent Table.
+
+Child Table: The Table contains the foreign key column is known or called as the child table.
+
+
+
+Later Check:
+
+Database Creation: Video:10
+Importing Data CSV
+Insert Statement,
+Update,
+Delete
+
+Most Important: Delete Vs. Truncate vs. Drop
+
+Chapter: 7, Video:1
+
+Databases are organized collections of data that allow for efficient storage, retrieval, and manipulation of information. There are several types of databases, each designed to serve specific purposes and use cases. Here are some common types of databases:
+
+Relational Database (RDBMS): Relational Database Management System
+
+Relational databases use a structured approach to store data in tables with rows and columns. Each row represents a record, and each column represents a specific attribute of the data. They use SQL (Structured Query Language) for querying and managing data. Examples of popular relational database management systems (RDBMS) include MySQL, PostgreSQL, Oracle, SQL Server, and SQLite.
+
+> In Relational Databases data are stored in rows and columns. Data are stored in tabular format in tables. And the relationship between tables is defined by FOREIGN KEYS.
+> Example: Sales Data, Banking Data, Students data, Movies data etc.
+
+NoSQL Databases:
+NoSQL databases are a group of databases that diverge from the traditional relational model. They are designed to handle large-scale data and provide high availability and scalability.
+
+> In NoSQL Databases there are no such fixed columns and the data structure is loosely defined. 
+> Example: Twiter Sentiment Analysis, Stock Price of Tesla> Collect all tweets regarding Tesla and Store the twits as documents in NoSQL Database.
+> Mongo DB, Couch DB, Apache Casendra
+
+
+
+Interview Important:
+
+Data Warehouse: Where the company stores all kinds of data. These data have got pulled from the live database or Original Source Database so that the production does not get hampared. In data warehouse we bring data from the source system using the process called ETL(Extract Transform and Load.
+
+> Transformation Example: Currency Conversion or Normalisation, Unit Normalisation, Derived Column, Aggregation of Data
+> OLTP: Online Transaction Processing: Handled By Software Engineers. Maintainance of Application, Managing the source Data Collector this kind of work.
+> OLAP: Online Analytical Processing: Handled by mostly Data Engineers(Extraction, Transformation and Loading of Data) and Data Analysts and Data Scientists. Who processes the data stored in the databases or data warehouses (by Data Engineers).
+
+> Data Catalog: It is like a spreadsheet where the information about all the databases are stored. It is for company use. It helps to understand which database is storing what kind of data, who are the people have got the access of the database, when is the last update time, What are the different tables inside the database. This kind of information company can get from Data Catalog. 
+
+
+Star Schema: Fact Tables are surrounded by Dimension tables. Both tables we should keep Normalized but for times for faster and smoother data retrieval we keep tables as denormalized compromising the data integrity, by increasing duplicates, anomalies, impurities.
+
+Snowflake Schema: Fact Tables are in the middle but Dimension tables are further connected to other dimension tables for better data access.
+
+
+
+********
+----------------------
+Creation of Function:
+----------------------
+CREATE FUNCTION 'function_name' 
+(argument_name argument_type)
+
+RETURNS return_type
+
+DETERMINISTIC/NON-DETERMINISTIC
+
+<DETERMINISTIC: if the output of the function always remains the same throughout the time then we put Deterministic(Same output for Same input throughout all the time) Otherwise,
+Non-DETERMINISTIC: If the output of the function changes with time even though the same input is provided.>
+
+BEGIN
+
+DECLARE variable_name variable_type;
+SET variable_name= <Write the Custome Function>;
+RETURN variable_name;
+
+END
+
+
+Example:2
+
+CREATE FUNCTION 'function_name' (argument_name argument_type)
+RETURNS return_type
+DETERMINISTIC/NON-DETERMINISTIC
+
+BEGIN
+
+	DECLARE variable_name variable_type;
+	DECLARE variable_name_2 variable_type_2;
+
+	SET variable_name=MONTH(argument_name);
+	
+	CASE
+		WHEN variable_name in (9,10,11) THEN 
+			SET variable_name_2="Q1";
+		
+		WHEN variable_name in (12,1,2) THEN 
+			SET variable_name_2="Q2";
+
+		WHEN variable_name in (3,4,5) THEN 
+			SET variable_name_2="Q3";
+		
+		ELSE
+			SET variable_name_2="Q4";
+	
+	END CASE;
+
+RETURN variable_name_2;
+
+END
+	
+	
+
+
+
+Takeaways:
+
+1. Date_Add Function: In built funtion> Adds a specific time interval with the given date or date column
+2. User Defined Funtion: Users can create funtions depending upon the requirement in order to reduce the redundant work
+3. DETERMINISTIC
+4. NON-DETERMINISTIC
+
+
+*************MOST IMPORTANT*************************
+
+Function: Always returns a single value
+Stored Procedure: Is just like some normal SQL query. It can return a Single Value, a list of values, a table, it can even update our data base.
+
+In case of STORED PROCEDURE we pass an complex or redundant SQL query in order to reduce complexity or redundance. It is just like any other SQL query but the only 
+difference is that a that query is stored inside the memory in such a way that when ever we want we can call the stored procedure and the complex query will get run.
+This will save a lot of time and reduce the chance of making any mistake as we do not have to write the same complex code again and again.
+
+> Like for different customers if we need to generate a same report we can just create a stored procedure and put the cusotmer name or customer number in the stored procedure in order to generate the same report.
+
+> We put the SQL query while writing stored procedure between the BEGIN AND END clause.
+
+> While creating stored procedures we can determine the Input and output variables and their type.
+
+> We can pass default value while creating stored procedure.
+
+
+Benifit of STORED PROCEDURE:
+
+A. CONVENIENCE: Do not need to write complex code for same type of work. Saves a lot of time and reduce the risk of human error.
+B. Security: We can provide access to store procedures to the persons whome we want to only.
+C. Easy to Read and More Manageable
+D. Developer Productivity
+
+
+**DURATION TIME: Refers to the time that a SQL query takes to get executed. Our goal is to minimize the Duration Time when optimizing the performance of SQL query.
+**FETCH TIME: Refers to the time to retrive the data from the data base server to our client computer.
+**EXPLAIN ANALYZE: By putting Explain Analyze before the SQL query we can measure the performance of that query.
+**VIEW: The process of Creating Virtual tables in MySQL is known as Views. VIEWs are virtual tables they are not physical tables. Physical Tables are getting saved or stored on the disk. Virtual tables are not real tables but they give a feel of real table. How it works: When we try to call a view, some queries gets executed internally on top of the Physical tables that are sotred in the memory and by executing the complex queries it creates a table.
+
+> We need to write the query for view once. Then the query gets stored inside the database as views and whenever we need anything from the virtual table, we just need to call the view then these stored query gets executed and we get the virtual queries.
+
+Syntax: CREATE VIEW 'view_name' AS <Complex SQL Query>
+
+Execution: SELECT * FROM 'view_name';<just like any other physical table we can call these virtual tables(views)>
+
+Benifits of Views:
+
+1. Simplify our queries.
+2. Reduce the chance of human error.(as we do not need to write long complex queries again and again)
+3. Security : We can restrict the access to the specific users.
+
+
+*****Difference between CTE and Views***************
+
+CTE: CTE creates a temporary table or view or virtual table within the range of a specific query. Outside the query the the virtual table or result generated by that particular CTE does not exists.
+
+VIEWs: We can use a view or the result of a view in all the seasons as it gets stored in the database and we can call the view whenever we need. 
+
+******5 ways SQL is used in the Data Industry,
+
+1. Ad hoc Analysis: Will answer the question during the meeting quickly by executing simple queries
+
+2. Report Generation
+
+3. EDA and Machine Learning
+
+4. ETL and Data Migration
+
+5. Inside BI Tools
+
+
+
+*********************Difference between SUBQUERY, CTE, VIEWS, TEMPORARY TABLES*************************************
+
+>>>>The purpose of all the above techniques are to hold result set generated by some sql query.
+
+1. CTE makes our query more readable compared to SUBQUERY. Easy to Understand and Debug CTEs compared to Subqueries.
+2. CTEs are reuseable. We can write nested CTEs.
+
+>> 
+	WITH 
+		cte  AS (Select * FRom Table A where col=....)
+		cte1 As (Select * from cte where col-=....)
+		cte2 As (Select * from CTE1 where col=....)
+
+3. Subqueries can be used in : SELECT & WHERE clause. We mostly use subquries which returns single values as we can not use CTEs to return single values.
+
+4. Some times we use SUBqueries in order to use a reference table in a SELECT clause.
+
+************************************************************
+
+A. Validity:
+
+SubQuery: 		Scope of the statement or restricted till a particular query.
+CTE: 			Scope of the statement or restricted till a particular query.
+Temporary Table:	Valid till the session. Can be used in multiple sheets/tabs/pages during a particular session. But once the session is over(We close the system/connection is 				interupted/other reasons) the validity gets ended.
+View:			Are stored in the database in the form of queries. Generates virtual table. Until it is deleted, it stays forever.
+
+
+B. Readablity:
+
+SubQuery: 		LOW
+CTE:			HIGH
+Temporary Table:	HIGH
+View:			HIGH
+
+
+
+C. Ideal Use case:
+
+SubQuery: 		Mainly when it returns single value(As CTE can't return Single Valule/or we should not use it): In SELECT and WHERE clause.
+CTE:			1. Reuse sub result 2. Recursive CTE 3. At all places where we can replace Subqueries with CTE
+Temporary Table:	When we need to reuse a complex query for a particular season multiple times.
+View:			When we need to reuse a complex query every now and then for a long time(years).
+
+
+
+
+SubQuery:
+CTE:
+Temporary Table:
+View:
+
+
+SQL Query Order of Execution:
+
+1.  FROM
+2.  JOIN
+3.  ON
+4.  WHERE
+5.  GROUP BY
+6.  WITH CUBE or WITH ROLLUP
+7.  HAVING
+8.  SELECT
+9.  DISTINCT
+10. ORDER BY
+11. LIMIT/OFFSET
+
+
+Very Very Important: Alias gets executed after GROUP BY. Hence, ALIAS can be used with HAVING but not with WHERE
+
+*********************************************************** SQL INTERVIEW QUESTIONS ************************************************************
+
+1. Explain order of execution of SQL.
+
+The order in which the clauses in queries are executed is as follows:
+
+1. FROM/JOIN: The FROM and/or JOIN clauses are executed first to determine the data of interest.
+
+2. WHERE: The WHERE clause is executed to filter out records that do not meet the constraints.
+
+3. GROUP BY: The GROUP BY clause is executed to group the data based on the values in one or more columns.
+
+4. HAVING: The HAVING clause is executed to remove the created grouped records that don’t meet the constraints.
+
+5. SELECT: The SELECT clause is executed to derive all desired columns and expressions.
+
+6. ORDER BY: The ORDER BY clause is executed to sort the derived values in ascending or descending order.
+
+7. LIMIT/OFFSET: Finally, the LIMIT and/or OFFSET clauses are executed to keep or skip a specified number of rows.
+
+
+2. What is difference between where and having?
+
+- WHERE: It is used to filter rows before grouping or aggregating data. It is used before Group By Clasue. It is applied to individual rows. We can not use Alias name with Where clause.
+- HAVING: It is used to filter aggregated data after the GROUP BY clause has been applied. It is applied to groups of rows. We can use Alias name with Having Clause.
+
+WHERE Clause:
+
+* Used to filter rows before data aggregation (works on individual rows).
+* Applied before any grouping or aggregation.
+* Used with SELECT, UPDATE, DELETE, etc.
+* Filters individual rows based on conditions.
+* Cannot be used with aggregate functions.
+* Can not use Alias name in Where Clause.
+
+HAVING Clause:
+
+* Used to filter grouped results after data aggregation (works on aggregated values).
+* Having clause helps to filter summarized/aggregated data.
+* Applied after data grouping and aggregation.
+* Used with GROUP BY clause.
+* Filters aggregated results based on conditions.
+* Specifically used with aggregate functions (e.g., SUM, COUNT, AVG).
+
+> In short, the WHERE clause filters individual rows, while the HAVING clause filters aggregated results for grouped data.
+
+
+VVI: ALIAS gets executed after GROUP BY. Hence, ALIAS can be used with HAVING but not with WHERE.
+
+3. What is the use of group by? 
+
+> The GROUP BY clause is used to group rows based on the values of one or more than one columns. It is often used with aggregate functions (like SUM, COUNT, AVG, etc.) to perform calculations on grouped data.
+
+> In short, the main uses of the GROUP BY clause are:
+
+* Grouping Rows: It groups rows based on the values in one or more columns, creating distinct groups of data.
+
+* Aggregation: It enables the use of aggregate functions like SUM, COUNT, AVG, MAX, MIN,String_Concat etc., which operate on the data within each group.
+
+* Summarizing Data: It provides a way to obtain summary statistics and data insights by calculating aggregated values for each group.
+
+By using the GROUP BY clause, we can efficiently analyze and summarize large datasets, allowing us to gain valuable information from our data without having to examine individual rows.
+
+
+
+--------------------------------------------------------------------------------------------------------
+* Rows: Reperesents records in the table
+* Columns: Each column represents a unique characteristic or special attribute of the data table we have.
+---------------------------------------------------------------------------------------------------------
+
+4. Explain all types of joins in SQL?
+
+> In SQL, there are several types of joins that allow us to combine data from multiple tables based on specified conditions. The common types of joins are:
+
+a. INNER JOIN: The INNER JOIN returns rows from both tables that have matching values in the specified columns. It only includes the rows where the join condition is satisfied in both tables. Rows that do not have a match in both tables are excluded from the result set.
+
+b. LEFT JOIN (or LEFT OUTER JOIN): The LEFT JOIN returns all the rows from the left table and the matching rows from the right table. If there is no match in the right table, NULL values are returned for the columns from the right table.
+
+c. RIGHT JOIN (or RIGHT OUTER JOIN): The RIGHT JOIN is similar to the LEFT JOIN but returns all the rows from the right table and the matching rows from the left table. If there is no match in the left table, NULL values are returned for the columns from the left table.
+
+d. FULL JOIN (or FULL OUTER JOIN): The FULL JOIN returns all the rows when there is a match in either the left or right table. If there is no match, NULL values are returned for columns from the table without a match.
+
+e. CROSS JOIN: The CROSS JOIN returns the Cartesian product of the two tables, meaning it combines each row from the first table with every row from the second table, resulting in a large combined result set.
+
+f. SELF JOIN: A self join is a specific type of join where a table is joined with itself. It is used to combine data from different rows within the same table based on a related column. This is particularly useful when the table has a hierarchical or recursive structure.
+
+5. What are triggers in SQL?
+
+> Triggers are database objects that are automatically executed or fired in response to specific events (e.g., INSERT, UPDATE, DELETE) on a table. They are often used to enforce business rules, maintain audit logs, or update related tables when certain changes occur.
+
+6. What is stored procedure in SQL?
+
+> A stored procedure is a prepared SQL code that is stored in the database and can be executed multiple times. It allows us to encapsulate complex logic and business rules, making it easier to manage and maintain the database.
+
+> A stored procedure in SQL is a named group of SQL statements that perform a specific task or set of tasks. It is like a function in other programming languages, but it is stored in the database itself. Stored procedures can accept input parameters, execute SQL statements, and return results or perform actions.
+
+Benefits of Stored Procedures:
+
+Code Reusability: Stored procedures allow you to write complex SQL logic once and reuse it multiple times, reducing redundancy and improving maintainability.
+
+Improved Performance: Since stored procedures are precompiled and stored in the database, they can execute faster than ad-hoc SQL queries.
+
+Enhanced Security: Stored procedures can be given appropriate access rights, providing better control over data access and preventing direct table access.
+
+Modularity: By encapsulating logic within a stored procedure, you can separate the application code from database-specific operations.
+
+
+7. Explain all types of window functions?(Practical)
+
+Window functions are a category of SQL functions that operate on a specified range of rows (window) in a result set. They allow us to perform calculations across a group of related rows without reducing the number of rows returned by the query. Here are explanations of the main window functions:
+
+a. RANK: Assigns a unique rank to each row based on the specified column's values.
+b. ROW_NUMBER: Assigns a unique number to each row within the result set.
+c. DENSE_RANK: Similar to RANK, but it does not leave gaps in rank numbers when there are ties.
+
+d. NTILE(n): The NTILE() function divides the result set into "n" equally sized groups (tiles) and assigns a group number to each row within the partition. It is useful for dividing data into percentiles or quartiles.
+
+e. LEAD: Accesses the value of a column on a subsequent row within the same result set.
+f. LAG: Accesses the value of a column on a previous row within the same result set.
+
+Window functions are commonly used in analytical and reporting queries, where you need to perform calculations based on the order of rows or across specific groups of data. They provide more flexibility and expressive power compared to traditional aggregate functions like SUM, AVG, etc., which reduce the number of rows in the result set. By leveraging window functions, you can efficiently gain insights into your data while preserving the original row-level details.
+
+8. What is difference between Delete and Truncate?
+
+a. DELETE:
+
+- DML Command
+- Can be used with Where Clause
+- Use DELETE when you want to remove specific rows from a table.
+- You can choose which rows to delete based on certain conditions (e.g., rows where a column has a specific value).
+- DELETE is slower for large deletions because it removes one row at a time and keeps a log of each deletion.
+- DELETE is safer when you have important data and need to be able to undo the removal using transactions.
+- DELETE works with triggers and foreign key constraints, so it is more suitable when you need to consider these aspects.
+
+b. TRUNCATE:
+
+- DDL Commmand
+- Can't be used with where clause
+- Use TRUNCATE when you want to delete all rows from a table quickly.
+- TRUNCATE removes all the rows at once, making it faster for large deletions.
+- TRUNCATE does not keep a log of each deletion, so it's not suitable for undoing the operation with transactions.
+- TRUNCATE is like resetting the table to its initial state; it removes all rows and resets the identity seed (if any).
+- TRUNCATE does not work with triggers and foreign key constraints, so it's simpler and faster, but you need to be careful not to lose important data.
+
+
+In summary, if you need to remove specific rows or maintain triggers and constraints, use DELETE. If you want to delete all rows quickly and don't need to worry about undoing the operation or triggers, use TRUNCATE. Choose the one that best fits your specific needs and always make sure to back up important data before performing any deletion operation, especially with TRUNCATE, as it cannot be undone.
+
+9. What is difference between DML, DDL and DCL?
+
+In SQL, DML, DDL, and DCL are three categories of SQL commands that serve different purposes:
+
+DML (Data Manipulation Language):
+
+DML commands are used to manipulate data within the database. They allow you to interact with the records stored in the database tables. The main DML commands are:
+
+SELECT: Used to retrieve data from one or more tables.
+INSERT: Used to add new records (rows) into a table.
+UPDATE: Used to modify existing records in a table.
+DELETE: Used to remove specific records from a table.
+
+DDL (Data Definition Language):
+
+DDL commands are used to define and manage the structure of the database and database objects. They are responsible for creating, altering, and dropping database objects. The main DDL commands are:
+
+CREATE: Used to create new database objects such as tables, views, indexes, etc.
+ALTER: Used to modify the structure of existing database objects, such as adding or removing columns from a table.
+DROP: Used to delete or remove existing database objects, such as dropping a table or a view.
+TRUNCATE: Although it is not technically a DDL command, it is related to DDL in the sense that it removes all rows from a table and is considered a structural operation.
+
+DCL (Data Control Language):
+
+DCL commands are used to control access to the database and its objects. They are concerned with granting or revoking permissions to users or roles. The main DCL commands are:
+
+GRANT: Used to give specific privileges to a user or role, allowing them to perform certain actions on database objects.
+REVOKE: Used to remove or revoke previously granted privileges, restricting the user's access to certain database objects.
+
+In summary:
+
+DML commands are for manipulating data (SELECT, INSERT, UPDATE, DELETE).
+DDL commands are for defining and managing the structure of the database and its objects (CREATE, ALTER, DROP, TRUNCATE).
+DCL commands are for controlling access to the database (GRANT, REVOKE).
+
+
+10. What are aggregate function and when do we use them? explain with few example.
+
+Aggregate functions in SQL are functions that operate on a set of rows and return a single value as the result. They are used to perform calculations across multiple rows and are often applied to grouped data. Aggregate functions are commonly used in conjunction with the GROUP BY clause to summarize data based on specific criteria.
+
+Here are some common aggregate functions and their usage:
+
+SUM(): Calculates the sum of the values in a column.
+
+Example:
+
+SELECT SUM(SalesAmount) AS TotalSales
+FROM Sales;
+
+COUNT(): Counts the number of rows in a column or the number of non-null values.
+
+Example:
+
+SELECT COUNT(*) AS TotalEmployees
+FROM Employees;
+AVG(): Calculates the average (mean) of the values in a column.
+
+Example:
+
+SELECT AVG(Age) AS AverageAge
+FROM Employees;
+MIN(): Retrieves the minimum value from a column.
+
+Example:
+
+SELECT MIN(Price) AS LowestPrice
+FROM Products;
+MAX(): Retrieves the maximum value from a column.
+
+Example:
+
+SELECT MAX(Salary) AS HighestSalary
+FROM Employees;
+
+Aggregate functions are especially useful when you want to summarize data and get insights into the overall characteristics of a dataset. When using aggregate functions, keep in mind the following points:
+
+Aggregate functions cannot be used in the WHERE clause; you'll need to use the HAVING clause for filtering based on aggregate results.
+When using aggregate functions along with non-aggregated columns in the SELECT clause, you'll likely need to include a GROUP BY clause to specify how the data should be grouped.
+Be cautious when using aggregate functions with NULL values, as they can affect the results. 
+
+***** For example, COUNT(*) will count all rows, including those with NULL values, while COUNT(column_name) will only count non-null values.
+
+
+In summary, aggregate functions are employed to calculate summary statistics like sums, counts, averages, minimum, and maximum values from data stored in database tables. They are particularly useful when you need to extract valuable insights from large datasets or when you want to create summary reports based on specific grouping criteria.
+
+11. Which is faster between CTE and Subquery?
+
+The performance difference between Common Table Expressions (CTEs) and subqueries in SQL is usually minimal or negligible. Both CTEs and subqueries can be optimized effectively by the database query optimizer, making them perform similarly in most cases.
+
+The choice between CTEs and subqueries should be based on query readability, maintainability, and specific requirements. Both are powerful tools for expressing complex queries, and their performance difference is usually not a significant factor in query optimization. Always consider examining execution plans and using database tools to analyze query performance for larger datasets or complex queries.
+
+12. What are constraints and types of Constraints? explain in simple words
+
+In SQL, constraints are rules or conditions that are applied to a table to ensure the data's integrity and validity. They help maintain the accuracy and consistency of data in the database by preventing certain actions that could lead to errors or inconsistencies. Constraints act as safety measures that restrict or control the data that can be inserted, updated, or deleted in a table.
+
+Here are some common types of constraints:
+
+- Primary Key Constraint: A primary key constraint ensures that a specific column (or combination of columns) uniquely identifies each row in the table. It prevents duplicate or null values in the primary key column, ensuring that each row has a unique identifier.
+
+- Foreign Key Constraint: A foreign key constraint establishes a relationship between two tables by enforcing referential integrity. It ensures that values in a specific column (the foreign key) of one table match values in the primary key column of another table.
+
+- Unique Constraint: A unique constraint ensures that values in a specific column (or combination of columns) are unique across the table. It prevents duplicate values but allows NULL values.
+
+- Check Constraint: A check constraint restricts the values that can be inserted into a column based on a specified condition. It ensures that only data meeting the condition is accepted.
+
+- Default Constraint: A default constraint assigns a default value to a column when no value is specified during an INSERT operation. If a value is not provided, the default value is used.
+
+- Not Null Constraint: A not null constraint ensures that a specific column cannot contain NULL values. It requires every row to have a value in that column.
+
+Constraints help maintain data quality and consistency by enforcing rules that prevent invalid or inconsistent data from entering the database. They are essential for building robust and reliable database systems.
+
+13. What are the different types of keys?
+
+In database management systems, there are several types of keys that play different roles in organizing and identifying data within a table. Here are the main types of keys:
+
+a. Primary Key:
+
+A primary key uniquely identifies each row in a table.
+It must contain unique and non-null values.
+A table can have only one primary key.
+It is used to create relationships (foreign keys) between tables.
+
+b. Foreign Key:
+
+A foreign key establishes a relationship between two tables.
+It references the primary key of another table and creates a link between the two tables.
+It ensures referential integrity, meaning the values in the foreign key column must match values in the primary key column of the related table.
+
+c. Unique Key:
+
+A unique key ensures that each value in the key column (or combination of columns) is unique across the table.
+Unlike the primary key, it allows NULL values (usually only one NULL value is permitted).
+
+d. Super Key:
+
+A super key is a set of one or more columns that can uniquely identify each row in a table.
+It can be a combination of multiple keys.
+
+e. Candidate Key:
+
+A candidate key is a minimal set of columns that can uniquely identify each row in a table.
+It is a type of super key with the property that no proper subset of it can uniquely identify a row.
+
+f. Composite Key:
+
+A composite key is a key that consists of two or more columns combined to create a unique identifier for each row in a table.
+Together, the columns in the composite key must form a unique combination.
+
+g. Surrogate Key:
+
+A surrogate key is an artificial primary key, typically an auto-incrementing or system-generated integer, used when there is no natural or meaningful primary key available.
+It is useful when there is no suitable column or combination of columns to serve as the primary key.
+
+These keys play a crucial role in defining relationships between tables and ensuring data integrity within the database. Each key type has its own specific purpose and significance in database design and management.
+
+
+14. Different types of Operators ?
+
+In SQL, operators are symbols or keywords used to perform various operations on data. They allow you to manipulate and compare values in the database. Here are the main types of operators in SQL:
+
+a. Arithmetic Operators:
+
+- Used to perform mathematical calculations.
+- Common arithmetic operators include addition (+), subtraction (-), multiplication (*), division (/), and modulus (%).
+
+b. Comparison Operators:
+
+- Used to compare values and determine the relationship between them.
+- Common comparison operators include equal to (=), not equal to (!= or <>), greater than (>), less than (<), greater than or equal to (>=), and less than or equal to (<=).
+
+c. Logical Operators:
+
+- Used to combine or negate conditions in a SQL statement.
+- Common logical operators include AND, OR, and NOT.
+
+d. LIKE Operator:
+
+- Used for pattern matching with character values.
+- Allows you to search for strings that match a specific pattern using wildcard characters (% and _).
+
+e. IN Operator:
+
+- Used to check if a value exists in a specified list of values.
+- Helps to simplify complex WHERE clauses with multiple OR conditions.
+
+f. BETWEEN Operator:
+
+- Used to check if a value falls within a specified range.
+- Simplifies range-based queries compared to using multiple comparison operators.
+
+g. IS NULL Operator:
+
+- Used to check for NULL values in a column.
+- Determines if a column contains no value (NULL).
+
+h. EXISTS Operator:
+
+- Used in subqueries to check if the subquery returns any rows.
+- Useful for determining the existence of related records in another table.
+
+These operators are fundamental building blocks for constructing SQL queries. By using operators, you can filter and manipulate data in the database to retrieve the desired information. Understanding how to use these operators effectively is essential for querying and managing data in SQL databases.
+
+
+15. Difference between Group By and Where?
+
+GROUP BY and WHERE are both clauses used in SQL to filter and organize data in queries, but they serve different purposes:
+
+WHERE:
+
+The WHERE clause is used to filter rows before they are grouped or aggregated.
+It is used to specify a condition that each row must meet to be included in the result set.
+The WHERE clause is applied before the GROUP BY clause in the query execution order.
+It filters individual rows based on specific criteria.
+
+GROUP BY:
+
+The GROUP BY clause is used to group rows based on the values of one or more columns.
+It is used in conjunction with aggregate functions like SUM, COUNT, AVG, etc., to perform calculations on each group of data.
+The GROUP BY clause is applied after the WHERE clause in the query execution order.
+It organizes data into groups based on the specified columns.
+
+In summary, the WHERE clause filters individual rows before any grouping occurs, while the GROUP BY clause organizes data into groups for aggregation. They are often used together in SQL queries to retrieve and summarize specific data based on certain conditions.
+
+16. What are views?
+
+- Views are nothing but complex queries stored in the database for future use. In simple words, when we need to reuse a result of a complex query again and again for a long time we store these complex queries inside the database itself. Hence, whenever we need to use the resultant table we can just call the view and reuse it. We can also use views to create other complex queries or views. 
+
+- Views generates generally a virtual table. That means the table which gets created after the execution of views those tables do not get stored inside the database. The queries only gets stored. Thus it saves spaces by not creating any physical table inside the database.
+
+- Views alsways returns the updated results or records or rows. As views are nothing but complex queries stored in the database that means that if we make any changes on the source data that change gets reflected into views(virtual table).
+
+- We do not need to refresh views as these are only set of queries.
+
+- We can give access to the views to the specific users and rolls thus it helps in data security as we can restrict the access.
+
+- Most important aspect of view is that it simplifies the complex quries and thus it makes the queries more readable, understandable, and debugable.
+
+
+17. Can we use Variables in Views?(No they can't)
+
+> In standard SQL, views do not directly support the use of variables. A view is a virtual table that represents the result of a pre-defined SQL query, and it cannot contain variables or accept parameters like a stored procedure or a user-defined function.
+
+18. What are the limitations of View?
+
+Limitations of Views:
+
+- Views do not store data themselves; they are virtual representations of data from underlying tables.
+- Not all views are updateable; some complex views become read-only and cannot be used for data modification.
+- Complex views with multiple joins and aggregations may impact query performance.
+- Changes to the underlying table structure may affect the view's validity, requiring modifications.
+- Limited support for using functions within view definitions.
+- Security restrictions are still subject to the underlying table's permissions.
+- Large result sets from views may lead to efficiency issues.
+- Some database systems have limitations on creating views across different databases or schemas.
+
+> Despite these limitations, views remain useful for simplifying queries, abstracting data, and controlling data access in databases. Careful consideration is necessary when using views, especially regarding performance and security implications.
+
+
+views can be called like any other normal table.
+
+19. Difference between VARCHAR and NVARCHAR:
+
+VARCHAR: Stores variable-length character data in a specified character set. It occupies 1 byte per character.
+NVARCHAR: Stores variable-length Unicode character data. It occupies 2 bytes per character.
+
+20. Difference between CHAR and NCHAR:
+
+CHAR: Stores fixed-length character data in a specified character set. It pads the data with spaces to reach the defined length.
+NCHAR: Stores fixed-length Unicode character data. It pads the data with spaces to reach the defined length.
+
+21. Difference between CHAR and VARCHAR:
+
+VARCHAR: Stores variable-length character data in a specified character set. It occupies 1 byte per character.
+CHAR: Stores fixed-length character data in a specified character set. It pads the data with spaces to reach the defined length.
+
+22. Index and types of indexes:
+
+> An index is a database object that improves the speed of data retrieval operations on a database table. Types of indexes include:
+
+- Clustered Index: Sorts and stores the data rows in the table based on the index key.
+- Non-clustered Index: Contains a separate structure with index keys and pointers to the actual data rows.
+
+
+- Unique Index: Ensures that the indexed column contains unique values.
+- Composite Index: Uses multiple columns as the index key.
+- Covered Index: Includes all the columns required for a specific query in the index itself, allowing the query to be resolved without accessing the actual table data.
+
+23. Types of relationships in SQL:
+
+One-to-One: Each record in Table A is related to one and only one record in Table B.
+One-to-Many: Each record in Table A is related to one or more records in Table B.
+Many-to-Many: Records in Table A are related to multiple records in Table B, and vice versa.
+
+24. Types of relationships in SQL:
+
+- One-to-One: Each record in Table A is related to one and only one record in Table B.
+- One-to-Many: Each record in Table A is related to one or more records in Table B.
+- Many-to-Many: Records in Table A are related to multiple records in Table B, and vice versa.
+
+25. Difference between UNION and UNION ALL:
+
+> The main difference between UNION and UNION ALL in SQL is how they handle duplicate rows when combining the results of multiple queries:
+
+UNION:
+
+- The UNION operator is used to combine the results of two or more SELECT queries into a single result set.
+- It removes duplicate rows from the combined result set. If there are any duplicate rows between the queries, only one copy of the duplicate rows will appear in the final result.
+
+UNION ALL:
+
+- The UNION ALL operator is also used to combine the results of multiple SELECT queries into a single result set.
+- Unlike UNION, UNION ALL does not remove duplicate rows. It includes all rows from each query, even if there are duplicates. This means that if there are duplicate rows between the          queries, all copies of the duplicates will be included in the final result.
+
+In summary:
+
+- UNION removes duplicate rows from the combined result set, showing each row only once.
+- UNION ALL includes all rows from each query, even if there are duplicates, resulting in potentially more rows in the final result.
+
+> When we are sure that the queries being combined will not produce any duplicate rows, using UNION ALL can be more efficient because it avoids the overhead of checking for duplicates. However, if you need to ensure unique rows in the final result, UNION is the appropriate choice.
+
+
+26. How many types of clauses are in SQL?
+
+> In SQL, there are several types of clauses that are used to perform various operations and tasks in a query. Here are the main types of clauses in SQL:
+
+- SELECT Clause: Retrieves data from one or more tables, specifying which columns to include in the result set.
+
+- FROM Clause: Specifies the table or tables from which to retrieve data.
+
+- WHERE Clause: Filters rows based on a specified condition, allowing you to retrieve only the rows that meet the criteria.
+
+- GROUP BY Clause: Groups rows based on specified columns, often used with aggregate functions to summarize data.
+
+- HAVING Clause: Filters grouped data based on a condition, similar to the WHERE clause but used with GROUP BY.
+
+- ORDER BY Clause: Sorts the result set based on one or more columns in ascending or descending order.
+
+- JOIN Clause: Combines rows from two or more tables based on a related column, creating a new result set.
+
+- LIMIT/OFFSET Clause: Limits the number of rows returned by a query, useful for pagination.
+
+- DISTINCT Clause: Removes duplicate rows from the result set.
+
+- INSERT Clause: Inserts new rows into a table.
+
+- UPDATE Clause: Modifies existing rows in a table.
+
+- DELETE Clause: Deletes rows from a table.
+
+- CREATE Clause: Creates new database objects, such as tables, views, or indexes.
+
+- ALTER Clause: Modifies the structure of an existing database object.
+
+- DROP Clause: Deletes an existing database object.
+
+- TRUNCATE Clause: Deletes all rows from a table but keeps the table structure intact.
+
+These clauses form the foundation of SQL queries and allow you to perform a wide range of operations on databases, from retrieving and filtering data to creating and modifying database objects.
+
+27. Difference between Primary Key and Foreign Key:
+
+Primary Key:
+
+- A primary key is a column (or set of columns) in a table that uniquely identifies each row in the table.
+- It enforces the entity integrity of the table, meaning that each row must have a unique identifier, and no two rows can have the same primary key value.
+- Primary keys are used to create relationships (foreign keys) with other tables, establishing data integrity and enforcing referential integrity in the database.
+
+Foreign Key:
+
+- A foreign key is a column (or set of columns) in a table that refers to the primary key of another table.
+- It represents a relationship between two tables, ensuring referential integrity, meaning that the values in the foreign key column must match values in the primary key column of the related table.
+- Foreign keys are used to establish connections between related data in different tables, creating associations between entities in the database.
+
+In summary, the main difference between a "Primary Key" and a "Foreign Key" is their purpose and usage. The primary key uniquely identifies each row in a table and maintains entity integrity, while the foreign key establishes relationships between tables and ensures referential integrity in the database. Together, primary keys and foreign keys play a crucial role in designing and maintaining well-structured relational databases.
+
+
+** Primary Key column helps to uniquely identify each record in a table.
+** Foreging Key column helps to create relationship among tables. A foreign key column in a table is a column that referes to the Primary key of another table.
+
+28. Write retention query in SQL?
+
+29. Find the second highest salary of an employee?
+
+30. Write year-on-year growth in SQL?
+
+31. Write a query for cummulative sum in SQL?
+
+32. Difference between Functions and Stored Procedure in SQL:
+
+In SQL Server, **stored procedures** and **functions** are two types of database objects that can be used to execute a set of SQL statements. Here are some differences between the two:
+
+- **Parameters**: Functions allow only input parameters and do not allow output parameters, while stored procedures allow both input and output parameters.
+- **Return value**: A function always returns a value, either a scalar or a table, whereas a stored procedure can return zero, single, or multiple values. A stored procedure in SQL Server does not return a table directly, but it can select data from a table and store it in a table variable.
+
+- **Execution**: Functions are compiled and executed at runtime(Functions are not pre-compiled objects), while stored procedures are stored in parsed and compiled state in the database.
+- **Statements**: Functions can only contain SELECT statements, while stored procedures can perform any operation on database objects, including SELECT and DML statements.
+
+- **Exception handling**: Functions do not allow the use of Try...Catch blocks for exception handling, while stored procedures allow the use of Try...Catch blocks.
+- **Transactions**: Functions cannot have transactions within them, while stored procedures can have transactions.
+- **Calling**: Functions can be called from a SELECT statement, while stored procedures cannot be called from a SELECT/Where or Having statements.
+
+33. What is SQL?
+
+> Structured Query Language (SQL) is a programming language that helps us to interact with structured data stored in relational databases. With SQL, we can communicate with databases and perform various tasks such as aggregating data, updating existing records, deleting data, retrieving specific information, and more. SQL provides a standardized way to work with databases, allowing us to manage data efficiently and perform operations on tables and data stored in a structured manner. It is a fundamental tool for data management and manipulation in the world of relational databases.
+
+34. What are the different data types in SQL?
+
+> In SQL, different data types define the type of data that can be stored in columns of database tables. Each data type has specific characteristics and limitations, ensuring data integrity and efficient storage. The exact data types available can vary slightly depending on the specific SQL database system you are using, but here are the common data types found in most SQL databases:
+
+A. Numeric Data Types:
+
+- INT (Integer) - Whole numbers (e.g., 1, -5, 100).
+- BIGINT - Larger range integer values.
+- SMALLINT - Smaller range integer values.
+- TINYINT- Very small integer value.
+- DECIMAL or NUMERIC - Fixed-point numbers with a specific number of digits before and after the decimal point.
+- FLOAT or REAL - Floating-point numbers with approximate precision.
+- DOUBLE or DOUBLE PRECISION - Double-precision floating-point numbers.
+
+B. Character Data Types:
+
+- CHAR - Fixed-length character strings (e.g., 'hello').
+- VARCHAR - Variable-length character strings (e.g., 'hello' or 'world').
+- TEXT - Long character strings for storing large text data.
+
+C. Date and Time Data Types:
+
+- DATE - Stores date values (e.g., '2023-07-31').
+- TIME - Stores time values (e.g., '12:30:45').
+- TIMESTAMP or DATETIME - Stores both date and time values (e.g., '2023-07-31 12:30:45').
+
+D. Boolean Data Type:
+
+- BOOLEAN or BOOL - Represents true or false values.
+
+E. Binary Data Types:
+
+- BLOB (Binary Large Object) - Stores large binary data like images or files.
+- BINARY - Fixed-length binary data.
+- VARBINARY - Variable-length binary data.
+
+F. Others:
+
+- ENUM - A user-defined list of values that a column can take.
+- JSON - For storing JSON (JavaScript Object Notation) data.
+
+These data types are used to define the structure of tables and ensure that data is stored correctly and efficiently. It's essential to choose the appropriate data type for each column based on the nature of the data it will store to ensure accuracy and optimize storage.
+
+
+35. How do you retrieve all columns from a table using SQL?
+
+> To retrieve all columns from a table, you can use the asterisk (*) wildcard in the SELECT statement: SELECT * FROM table_name;
+
+36. Explanation of the WHERE clause and how it filters data in a query:
+
+> The WHERE clause is used to filter rows from a table based on a specified condition. It follows the SELECT, UPDATE, or DELETE statement and comes before the GROUP BY or ORDER BY clauses (if used). The condition in the WHERE clause is evaluated for each row, and only the rows that meet the condition are included in the query result.
+
+37. Purpose of the GROUP BY clause in SQL:
+
+> Group By clause helps to aggregate the data based on one or more than one column values.
+> The GROUP BY clause is used to group rows with the same values in one or more columns. It is often used with aggregate functions (like SUM, COUNT, AVG, etc.) to perform calculations on groups of rows rather than on individual rows. The result set will have one row for each unique combination of values in the GROUP BY columns.
+
+38. Finding duplicate records in a table using SQL:
+
+> To find duplicate records, you can use the GROUP BY clause with HAVING to identify rows with duplicate values in specific columns. For example, to find duplicate email addresses in a table "customers":
+
+SELECT email, COUNT(*) AS occurrence
+FROM customers
+GROUP BY email
+HAVING COUNT(*) > 1;
+
+39. Use of ORDER BY and how it sorts query results:
+
+> The ORDER BY clause is used to sort the result set of a SELECT query in ascending or descending order based on one or more columns. By default, ORDER BY sorts the data in ascending order, but we can specify the keyword "DESC" to sort in descending order. For example:
+
+SELECT column1, column2
+FROM table_name
+ORDER BY column1 ASC, column2 DESC;
+
+40. Aggregate functions in SQL:
+
+>Aggregate functions perform calculations on a set of values and return a single value as the result. 
+Examples of aggregate functions are: SUM,COUNT,AVG,MIN,MAX, etc.
+
+41. Calculation of mean, median, and mode in SQL:
+
+- Mean (Average): SELECT AVG(salary) AS average_salary FROM employees;
+- Median: There is no direct median function in standard SQL, but you can calculate it using the following approach:
+
+SELECT salary
+FROM employees
+ORDER BY salary
+OFFSET (SELECT COUNT(*) FROM employees) / 2
+LIMIT 1;
+
+- Mode: The mode represents the most frequently occurring value in a column. Calculating mode in SQL can be complex, but you can use subqueries and GROUP BY to find it.
+
+
+42. How do you use the GROUP_CONCAT function in SQL?
+
+> The GROUP_CONCAT function is used to concatenate values from multiple rows into a single string based on the GROUP BY clause. It is particularly useful for creating comma-separated lists or displaying related data in a denormalized format.
+
+SELECT category, GROUP_CONCAT(product_name) AS products_list
+FROM products
+GROUP BY category;
+
+43. Handling NULL values in SQL queries:
+
+> Handling NULL values in SQL queries is crucial to ensure accurate and reliable results when dealing with databases. NULL represents the absence of a value and can occur in a database column when a value is not known, not applicable, or not provided. Here are some common techniques to handle NULL values in SQL queries:
+
+a. IS NULL and IS NOT NULL:
+
+Use the IS NULL or IS NOT NULL condition to check for NULL values in a column.
+For example, to select rows where the "column_name" is NULL, use: 
+
+SELECT * FROM table_name 
+WHERE column_name IS NULL;
+
+b. COALESCE Function:
+
+The COALESCE function returns the first non-NULL value from a list of expressions. It can be used to replace NULL values with a default value or the first non-NULL value in the list.
+Example: 
+
+> SELECT COALESCE(column_name, 'Default Value') FROM table_name;
+
+> SELECT firstName +' '+ COALESCE(MiddleName,'') +' '+ LastName  FROM person_table;
+
+- In the above example, MiddleName column has some null values in it as all the persons may not have middle name in there name. Hence, in order to tackle the NULL values, we have used COALESCE function to replace NULL values with Empty String('').
+
+c. IFNULL or NULLIF Function (Database-Specific):
+
+Some database systems have specific functions to handle NULL values.
+- For example, in MySQL, you can use IFNULL(column_name, 'Default Value') to replace NULL values with a default value.
+- In PostgreSQL, you can use NULLIF(column_name, 'Value to Replace') to replace specific values with NULL.
+
+d. Aggregate Functions and NULL:
+
+- Aggregate functions like SUM, COUNT, AVG, etc., ignore NULL values during calculations.
+- For example, SELECT SUM(column_name) FROM table_name; will exclude NULL values when calculating the sum.
+
+e. COALESCE in ORDER BY (Database-Specific):
+
+Some database systems allow using COALESCE in the ORDER BY clause to handle NULL values when sorting.
+Example: SELECT * FROM table_name ORDER BY COALESCE(column_name, 'Default Value');
+
+- Handling NULL values appropriately is essential to avoid unexpected results and errors in SQL queries. By using the appropriate functions and conditions, you can manage NULL values effectively and ensure the accuracy of your query results.
+
+44. SQL Indexes and their usefulness:
+
+> Indexes in SQL are database objects that improve the speed of data retrieval operations on a table. They work like a table of contents, allowing the database engine to quickly locate specific rows based on the indexed column(s). Indexes are useful because they significantly reduce the time required to search, sort, and filter data, leading to faster query performance. However, indexes do come with some overhead in terms of storage space and maintenance, so they should be used judiciously on columns that are frequently used in WHERE clauses and JOIN conditions.
+
+
+46. Calculation of year-over-year growth in SQL:
+47. Finding the nth highest or nth lowest value in a table:
+
+> To find the nth highest value, you can use the ORDER BY clause with the LIMIT or OFFSET FETCH clause (depending on your SQL dialect). For example, to find the 5th highest value in a column named "column_name": 
+
+SELECT column_name
+FROM your_table
+ORDER BY column_name DESC
+LIMIT 1 OFFSET 4;
+
+- To find the nth lowest value, change the ORDER BY to ASC.
+
+48. Creating and using temporary tables in SQL:
+
+> Temporary tables are created using the CREATE TEMPORARY TABLE statement (or simply CREATE TEMP TABLE). Temporary tables are session-specific and only exist for the duration of the session. They are useful for storing intermediate results during complex queries or for breaking down a complex problem into smaller, manageable parts.
+
+- CREATE TEMPORARY TABLE table_name <sql query>
+- Once the session ends, the temporary table is automatically dropped. Temporary tables are often used within stored procedures, complex queries, or scripts.
+
+49. Explain the use of the CASE statement in SQL queries.
+
+> The CASE statement in SQL is a powerful and flexible way to conditionally control the flow of a query. It allows you to perform different actions based on specified conditions and return different values or perform different operations accordingly. The CASE statement can be used in both SELECT queries and other parts of the query, such as ORDER BY and GROUP BY clauses.
+
+a.  Data Transformation:
+
+SELECT
+    name,
+    age,
+    CASE
+        WHEN age <= 25 THEN 'Young'
+        WHEN age > 25 AND age <= 40 THEN 'Middle-aged'
+        ELSE 'Senior'
+    END AS age_category
+FROM
+    students;
+
+b. Conditional Aggregation:
+
+SELECT
+    customer_id,
+    SUM(CASE WHEN order_date < '2023-01-01' THEN order_amount ELSE 0 END) AS total_amount_before_date,
+    SUM(CASE WHEN order_date >= '2023-01-01' THEN order_amount ELSE 0 END) AS total_amount_on_or_after_date
+FROM
+    orders
+GROUP BY
+    customer_id;
+
+
+50. Use of CTEs (Common Table Expressions) in SQL: 
+
+CTE is nothing but the process of making complex query simplier by breaking them down into smaller and more manageable parts. CTEs are defined using the WITH clause and can be referenced in subsequent SELECT, INSERT, UPDATE, or DELETE statements.
+
+51. Performing date and time calculations in SQL:
+
+> SQL provides various date and time functions to perform calculations. Examples include:
+
+- DATE_ADD(): Adds a specified interval to a date or datetime.
+- DATE_SUB(): Subtracts a specified interval from a date or datetime.
+- DATEDIFF(): Calculates the difference between two dates.
+- DATEPART(): Extracts a specific part of a date or datetime (e.g., year, month, day, etc.).
+- DATE_FORMAT(): Formats a date or datetime value into a specific string format.
+
+
+52. Correlated subqueries and their use:
+
+>> A correlated subquery is a subquery that uses values from the outer query. It is like a nested query, but the inner query depends on the outer query for its values. This means that the inner query is executed for each row of the outer query. A correlated subquery can be used to find data that matches some conditions based on the data in the outer query. For example, you can use a correlated subquery to find employees who earn more than the average salary in their department. Here is an example of a correlated subquery:
+
+SELECT employee_name
+FROM employees e
+WHERE salary_amount > (SELECT AVG(salary_amount) FROM salaries s WHERE s.employee_id = e.employee_id);
+
+
+In this example, the correlated subquery calculates the average salary for each department based on the department_id value from the outer query. The outer query then compares the salary of each employee with the average salary of their department and returns the employees who earn more than the average. 
+
+
+
+53. Calculating the cumulative sum in SQL:
+
+SELECT date_column,
+       value_column,
+       SUM(value_column) OVER (ORDER BY date_column) AS cumulative_sum
+FROM your_table;
+
+54. Using the LIMIT and OFFSET clauses for pagination:
+
+- The LIMIT clause is used to restrict the number of rows returned by a query, while the OFFSET clause is used to skip a specified number of rows before starting to return the result set. They are commonly used for implementing pagination in applications.
+
+SELECT column1, column2
+FROM your_table
+ORDER BY column1
+LIMIT 10 OFFSET 20;
+
+> This query will return 10 rows, starting from the 21st row, ordered by column1.
+
+55. Advantages and disadvantages of using SQL:
+
+A. Advantages:
+
+- Powerful querying capabilities for retrieving, manipulating, and analyzing data.
+- Standardized language supported by various database management systems.
+- High level of data integrity and security through constraints and access controls.
+- Efficient indexing and optimization for query performance.
+
+B. Disadvantages:
+
+- Complex queries may require substantial knowledge and optimization skills.
+- Scalability challenges with extremely large datasets.
+- Database management may require significant administrative efforts.
+- Not suitable for unstructured or NoSQL data models.
+
+56. Handling duplicate rows while inserting data into a table:
+
+> To avoid inserting duplicate rows, you can use the INSERT INTO...SELECT statement with the NOT EXISTS clause to check for existing rows before insertion.
+
+
+INSERT INTO customers (customer_name)
+SELECT 'John Doe'
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM customers
+    WHERE customer_name = 'John Doe'
+);-- Need to check once.
+
+57. Different types of joins in terms of Venn diagrams:
+
+- INNER JOIN: Represents the overlapping area of two circles, showing only the rows with matching values in both tables.
+- LEFT JOIN: Represents the left circle and the overlapping area, showing all rows from the left table and the matching rows from the right table.
+- RIGHT JOIN: Represents the right circle and the overlapping area, showing all rows from the right table and the matching rows from the left table.
+- FULL JOIN: Represents both circles and the overlapping area, showing all rows from both tables, including the matching rows.
+
+58. Rank() vs. Dense_Rank()
+
+Rank skips numbers while ranking the records if it founds similar records. However, 
+Dense Rank does not skip any number while ranking records if it founds similar records.
+
+Suppse, while ranking if rank has found two similar values for the second position then it will assign the same number 2 for each record but for the 4th record it will assign number 4 on the other hand Dense Rank will assign the number 3 without skipping any values.
+
+- In case of Dense Rank, there will be no gaps in the ranking.
+
+Suppose there are 5 records and the ORDER BY column has values: [10, 20, 30, 30, 40]
+
+With RANK(), it would be like: [1, 2, 3, 3, 5]
+With DENSE_RANK(), it would be like: [1, 2, 3, 3, 4]
+
+59. Row_Number(): This function helps to assign running numbers to each rows. It will assign consecutive values starting from 1 to each row if there is no partition by clause. If there is a partition by clause in the query then the Row_Number function will assign running numbers to each partition or window.
+
+60. Lead and LAG Window Function:
+
+- Lead: This window funtion helps to find the upcoming number by the given interval.
+- Lag: 	This window funtion helps to find the previous number by the given interval.
+
+> We can use them in combination with Partition BY, Order By
+
+61. Handling Null values:
+
+-  Null is an unknown value, we can't find Null values in a data base with Equals to (=) or Not Equals to (<>,!=) operator, As NULL is not compareable that is why we need to use:
+   IS or IS NOT operator.
+
+select * from table_name
+where column_a IS NOT NULL;
+
+- We can replace NULL values in a column with IFNULL,NULLIF,ISNULL,COALESCE funtion<Need Check which one works in MySQL>
+
+- Null with aggregation function: Aggregation function while aggregation do not consider the rows with null values. 
+
+That is why:
+
+AVERAGE[6,4,NULL,7,3]=(20/4)=5 not (20/5)
+But,
+AVERAGE[6,4,IFNULL(col_name,10),7,3]=(30/5)=6
+
+- Count: 
+
+> Count(*): Counts all the records/rows. 
+> Let, col_a=[6,4,NULL,7,3]
+> COUNT(*)=5
+
+BUT,
+
+> Count(col_a): Will not consider the row with null value or values.
+> Count(col_a): 4
+
+- When we insert null in records then we just put NULL, not 'null'
+
+61. There are plenty of Date-Time functions in MySQL:
+
+> Check W3 School Documentation;
+
+62. SELF JOIN: We use generally self join when one column in a particular table points to another column in the same table.
+
+EXAMPLE: emp_id,emp_name,salary,dept,manager_id
+
+The manager id column generally points towards the emp_id column. Here in this case we can use SELF join to find the relation between employee and manager.
+
+*** Employee Table's Manager_Id points to Manager_Tables's Employee Id -- Important
+
+select
+    e.emp_id,
+    e.emp_name,
+    m.emp_id,
+    m.emp_name as manager_name,
+    e.salary as emp_salary,
+    m.salary as manager_salary
+from emp1 as e
+join emp1 as m
+on
+e.manager_id=m.emp_id
+where e.salary > m.salary;
+
+63. CROSS JOIN:
+
+- We use Cross Join to create Master Table where we get all the combinations of two tables.
+- It is the cartesian product of all the rows in each table.
+- Table a has 5 rows, Table b has 3 rows, Table c has 4 rows: Then the Master table after CROSS JOIN of all the tables will have 5x3x4=60 rows.
+- syntax: 
+> select * from table_a as a, table_b as b, table_c as c, .....;
+
+64. JOINS: 
+> t:table, c:column
+> t1:c1:[1,1]
+> t2:c2:[1,1,1]
+
+a. Inner JOIN:
+
+1=1, each 1 will get joined with every other 1 in the t2 table as 1=1; Hence, there will be 2x3=6 records in the joined table.
+
+b. Left Join:
+
+1=1, each 1 will get joined with every other 1 in the t2 table as 1=1;If there are uncommon or unique records in the table t1(left table) then those records should appear in the final result but as there is none, that is why the result will remain same. 2x3=6 records.
+
+c. Right Join:
+
+1=1, each 1 will get joined with every other 1 in the t2 table as 1=1;If there are uncommon or unique records in the table t2(right table) then those records should appear in the final result but as there is none, that is why the result will remain same. 2x3=6 records.
+
+d. Full OUter JOin:
+
+1=1, each 1 will get joined with every other 1 in the t2 table as 1=1;If there are uncommon or unique records in either table t1(left table) or table t2(right table) then those records should appear in the final result but as there is none, that is why the result will remain same. 2x3=6 records.
+
+e. Union all:
+
+-- Will return all the rows; 6 records after left join and 6 records after right join; 
+-- Together the final result will be 6+6=12
+
+f. UNION:
+
+-- We will only get the common records after UNION operation. 
+-- Hence the result will be :1 
+
+
+Important to Remember: If matched, then joined will result in one(1) record/row.
+
+Condition: 2
+
+c1:[1,1,2]
+c2:[1,1,1,3]
+
+a. Inner JOin: 2x3=6
+b. Left Join: 2x3+1=6+1=7
+c. Right Join: 2x3+1=6+1=7
+d. Full Outer Join: 2x3+1+1=6+1+1=8
+e. Union All: 7+7=14
+f. Union: 1+1+1=3
+
+
+Condition: 3
+
+c1:[1,1,2,2]
+c2:[1,1,1,3,2]
+
+a. Inner JOin: 2*3+2*1=6+2=8
+b. Left Join: 2*3+2*1+0=6+2+0=8
+c. Right Join: 2*3+2*1+1=6+2+1=9
+d. Full Outer Join: 2*3+2*1+1=6+2+1=9
+e. Union All: 8+9=17
+f. Union: 1+1+1=3
+
+
+Condition: 4
+
+c1:[1,1,2,2,4]
+c2:[1,1,1,3,2]
+
+a. Inner JOin: 2*3+2*1=6+2=8
+b. Left Join: 2*3+2*1+1=6+2+1=9
+c. Right Join: 2*3+2*1+1=6+2+1=9
+d. Full Outer Join: 2*3+2*1+1+1=6+2+1+1=10
+e. Union All: 18
+f. Union: 4
+
+
+
+Condition: 5
+
+NOTE: NULL values are not compareable. Null means the value is unknown. NULL != NULL
+
+c1:[1,1,2,2,4,null]
+c2:[1,1,1,3,2,null]
+
+a. Inner JOin: 2*3+2*1=6+2=8
+b. Left Join: Unique Records+Exclusive Record in Left Table: 8+1+1=10
+c. Right Join: Unique Records+Exclusive Record in Right Table: 8+1+1=10 
+d. Full Outer Join: Unique Records+ All Exclusive Records in both table: 8+1+1+1+1=12
+e. Union All: 10+10=20
+f. Union: Important: During UNION NULLs are considered to be equal: 1+1+1+1+1=5
+
+
+
+
+Condition: 6
+
+NOTE: NULL values are not compareable. Null means the value is unknown. NULL != NULL
+
+c1:[1,1,2,2,4,null,null,null]
+c2:[1,1,1,3,2,null,null]
+
+a. Inner JOin: 2*3+2*1=6+2=8
+b. Left Join: Unique Records+Exclusive Record in Left Table: 2*3+2*1+1+1+1+1=6+2+4=12
+c. Right Join: Unique Records+Exclusive Record in Right Table: 2*3+2*1+1+1+1=6+2+3=11
+d. Full Outer Join: Unique Records+ All Exclusive Records in both table: 2*3+2*1+4+3=6+2+4+3=15
+e. Union All: 11+12=23
+f. Union: Important: During UNION NULLs are considered to be equal: 1+1+1+1+1=5
+
+
+65. Running Total
+
+> aggregated_function(col_name) over(partition by col(as per requirement) order by (as per requirement) asc/desc <rows between lower_bound and upper_bound>) as Alias_Name
+
+
+***
+
+a. Unbounded Preceding: All the rows before the current row
+b. n Preceding: n-number of rows before the current row
+c. current row: just the current row
+d. n Following: n-number of rows after the current row
+e. Unbounded Following: All the rows after the current row
+
+66. 
+
+Count_Table: Col_Name: id:[2,4,null,25,3,null]
+
+-- count(*)
+select count(*) as cnt from count_table; -- 6(Calculates rows with NULL)
+
+-- count(0)
+select count(0) as cnt from count_table;-- 6(Calculates rows with NULL)
+
+-- count(1)
+select count(1) as cnt from count_table;-- 6(Calculates rows with NULL)
+
+-- count(-1)
+select count(-1) as cnt from count_table;-- 6(Calculates rows with NULL)
+
+-- count(id)
+select count(id) as cnt from count_table;-- 4(Does not consider rows with NULL)
+
+
+** Whenever we calculate the running sum: We must use the "ROWS BETWEEN" Clause. Otherwise, for same values, we will get wrong answers.
+
+*****
+> LAG without LAG formula: Order by Column_Name asc ROWS BETWEEN 1 PRECEDING AND 1 PRECEDING;
+> LEAD without LEAD formula: Order by Column_Name asc ROWS BETWEEN 1 FOLLOWING AND 1 FOLLOWING;
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+▲
+■
+▼
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

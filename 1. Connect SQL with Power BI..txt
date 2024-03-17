@@ -1,0 +1,50 @@
+1. Connect SQL with Power BI.
+2. Power BI with Python.
+3. SQL with Python.
+4. How to Optimize SQL query.
+5. How to Optimize Power BI reports.
+6. Reports vs. Dashboard.
+7. Power BI Service PRO vs. premium memory Capacity-number of times we can refresh.
+8. Direct Query, Import Mode, and the other type(composite mode)
+9. Scheduled Refresh, Incremental Refresh
+10. Row Level Security
+11. Edit Interactions
+12. Filter vs. Slicer(is a visual)
+13. Power Apps, Power Automate, Power View and Power Map
+14. Fact table, dimension table. How to identify them. Characteristics.
+15. Delete, Truncate, Drop
+16. Rollback
+17. Index and its types does index help?
+18. Active connection, inactive connection
+19. Merge vs. append
+20. Reference table vs. duplicate table
+21. SumX vs. Sum
+22. Row Context vs. Filter Context
+23. How does the Calculate function work?
+24. Char, Nvarchar, Varchar - In-depth Analysis
+25. SWITCH function, SelectedValue, ALL, Summarize Function
+26. Treemap, Stacked Bar Graph(Navoneel Example), Column Chart,
+27. What is CTE?
+28. What is Subquery?
+29. What is Correlated-Subquery?
+30. Temporary Table vs View.
+31. SQL Function vs. Stored Procedure.
+32. What is more 
+33. Drill Through report, Tooltip, Bookmark
+34. Window Function, Aggregate and Scalar Function
+35. Query Folding
+36. How to link two Fact Tables.
+37. Star Schema, Snowflake Schema, Dragon Schema
+38. What is the Case Statement?
+39. Colcase Function and its use?
+40. Primary Key Foreign Key and Composite Key.
+41. Union vs. Union ALL.
+42. What are the different types of relationships(Cardinality) we have in the dataset?
+43. Calculated Column, Custom Column, Conditional Column
+44. Measure vs. Calculated Column
+45. DML, DCL, DDL
+46. Row Number, Rank, Dense Rank
+47. 
+
+
+
